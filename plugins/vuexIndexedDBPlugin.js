@@ -21,6 +21,7 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
       console.log('Can not open db')
     }
     openRequest.onsuccess = (event) => {
+      console.log('Open db')
       db = event.target.result
 
       for (let keyState in store.state) {
@@ -36,18 +37,31 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
     }
 
     openRequest.onupgradeneeded = (event) => {
+      console.log('Upgrade db')
       db = event.target.result
 
       // all stores
       for (let keyState in store.state) {
         if (!db.objectStoreNames.contains(keyState)) {
           let objectStore = db.createObjectStore(keyState, { keyPath: 'id', autoIncrement : true })
+          console.log('Create DB store '+keyState)
 
-          objectStore.onerror = () => {
-            console.log('Failed to create store for '+keyState)
-          }
-          objectStore.onsuccess = (event) => {
-            console.log('Create DB store '+keyState)
+          let state = store.state[keyState]
+          if (state.schema) {
+            if (state.schema.defaultData) {
+              let defaultData = state.schema.defaultData
+              defaultData.forEach((data) => {
+                let request = objectStore.add(data)
+                request.onerror = () => {
+                  console.log('Data add error for '+ keyState)
+                }
+                request.onsuccess = (event) => {
+                  console.log('Data added to '+ keyState)
+                  data.id = event.target.result
+                  store.commit(`${keyState}/addedToIndexedDB`, data)
+                }
+              })
+            }
           }
 
 

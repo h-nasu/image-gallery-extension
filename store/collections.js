@@ -1,5 +1,14 @@
 
 export const state = () => ({
+  schema: {
+    indexes: [],
+    defaultData: [
+      {
+        id: 1,
+        name: 'All Images'
+      }
+    ]
+  },
   list: []
 })
 

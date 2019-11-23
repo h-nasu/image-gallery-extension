@@ -2,6 +2,12 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
+  generate: {
+    dir: 'public/image-gallery'
+  },
+  router: {
+    base: (  process.env.NODE_ENV === 'production' ) ? '/image-gallery/' : '/'
+  },
   /*
   ** Headers of the page
   */

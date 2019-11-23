@@ -173,17 +173,6 @@ export default {
       })
     }
   },
-  created() {
-    let result = this.treeItems.find((item) => {
-      return item.id == 1
-    })
-    if (!result) {
-      this.$store.commit('collections/addToIndexedDB', {
-        id: 1,
-        name: 'All Images'
-      })
-    }
-  },
   methods: {
     closeDialog() {
       this.dialog = false
