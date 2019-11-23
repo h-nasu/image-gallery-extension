@@ -36,6 +36,7 @@
         activatable
         hoverable
         :items="treeItems"
+        :active.sync="active"
       ></v-treeview>
 
 
@@ -118,6 +119,8 @@ export default {
       miniVariant: false,
       title: 'Image Gallery Extension',
 
+      active: [],
+
       dialog: false,
 
     }
@@ -161,6 +164,13 @@ export default {
         }
       }
       return allCollections
+    }
+  },
+  watch: {
+    active: function(value) {
+      this.$router.push({
+          path: '/collections/'+value[0]
+      })
     }
   },
   created() {
