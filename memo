@@ -1,0 +1,9 @@
+put chrome extension scripts to public/
+
+test
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log('Got the request!!!!!')
+    console.log(request)
+  }
+);

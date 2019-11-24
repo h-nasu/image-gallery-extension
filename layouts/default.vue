@@ -169,7 +169,26 @@ export default {
   watch: {
     active: function(value) {
       this.$router.push({
-          path: '/collections/'+value[0]
+        path: '/collections/'+value[0]
+      })
+    }
+  },
+  created() {
+    /*
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+      if (request.type == 'getImages' && request.images) {
+        console.log('Image-Gallery Got Images')
+        console.log(request.images)
+        sendResponse({farewell: 'Got Images on Image-Gallery!'})
+      } else {
+        sendResponse({farewell: 'No Images!'})
+      }
+
+    });
+    */
+    if (window.location.href.search('index.html') > -1) {
+      this.$router.push({
+        path: '/'
       })
     }
   },

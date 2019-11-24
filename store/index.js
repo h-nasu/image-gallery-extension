@@ -1,7 +1,8 @@
 
-import vuexIndexedDBPlugin from '~/plugins/vuexIndexedDBPlugin'
+import commonConfig from '~/public/commonConfig'
+import vuexIndexedDBPlugin from '~/public/plugins/vuexIndexedDBPlugin'
 
-export const plugins = [ vuexIndexedDBPlugin('chrome-image-extension-db', 1) ]
+export const plugins = [ vuexIndexedDBPlugin(commonConfig.dbname, commonConfig.dbversion) ]
 
 export const state = () => ({
   counter: 0

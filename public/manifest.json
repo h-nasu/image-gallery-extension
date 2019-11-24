@@ -1,0 +1,32 @@
+{
+  "name": "Image Gallery",
+  "version": "1.0",
+  "description": "Image Gallery for Chrome Browser",
+  "permissions": ["contextMenus","activeTab", "declarativeContent","tabs"],
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/get_started128.png",
+      "32": "images/get_started128.png",
+      "48": "images/get_started128.png",
+      "128": "images/get_started128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "icons": {
+    "16": "images/get_started128.png",
+    "32": "images/get_started128.png",
+    "48": "images/get_started128.png",
+    "128": "images/get_started128.png"
+  },
+  "manifest_version": 2
+}
