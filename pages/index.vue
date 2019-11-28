@@ -87,6 +87,11 @@ export default {
   components: {
     Logo,
     VuetifyLogo
-  }
+  },
+  created() {
+    this.$router.push({
+      path: '/collections/0'
+    })
+  },
 }
 </script>
