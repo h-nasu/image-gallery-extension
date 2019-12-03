@@ -189,7 +189,7 @@ export default {
     });
     */
     if (window.location.href.search('index.html') > -1) {
-      this.$router.push({
+      this.$router.replace({
         path: '/'
       })
     }

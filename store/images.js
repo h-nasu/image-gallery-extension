@@ -10,6 +10,7 @@ export const mutations = {
   initFromIndexedDB (state, list) {
     state.list = list
   },
+  loadAllFromIndexedDB () {},
   addToIndexedDB () {},
   addedToIndexedDB (state, data) {
     state.list.push(data)

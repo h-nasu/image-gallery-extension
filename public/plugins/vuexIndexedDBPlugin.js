@@ -17,6 +17,17 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
       return transaction.objectStore(storeName)
     }
 
+    const loadDataFromStore = (storeName) => {
+      if (db.objectStoreNames.contains(storeName)) {
+        const mutationType = `${storeName}/initFromIndexedDB`
+        if (store._mutations && store._mutations[mutationType]) {
+          getObjectStore(storeName).getAll().onsuccess = function(event) {
+            store.commit(mutationType, event.target.result)
+          }
+        }
+      }
+    }
+
     openRequest.onerror = () => {
       console.log('Can not open db')
     }
@@ -25,6 +36,8 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
       db = event.target.result
 
       for (let keyState in store.state) {
+        loadDataFromStore(keyState)
+/*
         if (db.objectStoreNames.contains(keyState)) {
           const mutationType = `${keyState}/initFromIndexedDB`
           if (store._mutations && store._mutations[mutationType]) {
@@ -33,6 +46,7 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
             }
           }
         }
+        */
       }
     }
 
@@ -122,8 +136,8 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
 
 
     store.subscribe((mutation, state) => {
-      console.log(mutation)
-      console.log(state)
+      //console.log(mutation)
+      //console.log(state)
 
       let objectStore
       let request
@@ -134,6 +148,9 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
       let data = mutation.payload
 
       switch (action) {
+        case 'loadAllFromIndexedDB':
+          loadDataFromStore(storeName)
+          break;
         case 'addToIndexedDB':
           objectStore = getObjectStore(storeName)
           request = objectStore.add(data)
@@ -160,8 +177,25 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
                 dbData[key] = data.params[key]
               }
 
-              // Put this updated object back into the database.
               let requestUpdate = objectStore.put(dbData);
+              requestUpdate.onerror = () => {
+                console.log('Data update error for '+ storeName)
+              }
+              requestUpdate.onsuccess = (event) => {
+                console.log('Data update from '+ storeName)
+              }
+            }
+          }
+          break;
+        case 'deleteFromIndexedDB':
+          objectStore = getObjectStore(storeName)
+          if (data.id) {
+            request = objectStore.delete(data.id)
+            request.onerror = () => {
+              console.log('Data delete error for '+ storeName)
+            }
+            request.onsuccess = (event) => {
+              console.log('Data delete from '+ storeName)
             }
           }
           break;

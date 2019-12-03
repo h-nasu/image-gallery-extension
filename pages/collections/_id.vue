@@ -5,14 +5,16 @@
         {{ editFlag ? 'Finish Edit Image' : 'Edit Image' }}
       </v-btn>
 
-      <span v-if="editFlag && editImages.length > 0 ">
-        <v-btn color="info" @click="AddToCollections()">
-          Add to Collections
-        </v-btn>
-        <v-btn small color="warning" @click="toggleEdit()">
-          Delete Images
-        </v-btn>
-        <v-btn small color="error" @click="toggleEdit()">
+      <span v-if="editFlag">
+        <span v-if="editImages.length > 0">
+          <v-btn color="info" @click="AddToCollections()">
+            Add to Collections
+          </v-btn>
+          <v-btn small color="warning" @click="deleteSelectedImages()">
+            Delete Images
+          </v-btn>
+        </span>
+        <v-btn small color="error" @click="deleteCurrentCollection()">
           Delete this Collection
         </v-btn>
       </span>
@@ -55,7 +57,7 @@
       </div>
     </v-container>
 
-    <add-to-collections :image-ids="editImages" :dialog="addToCollectionDialog" @closeDialog="addToCollectionCloseDialog" />
+    <add-to-collections :current-id="id" :image-ids="editImages" :dialog="addToCollectionDialog" @closeDialog="addToCollectionCloseDialog" />
   </div>
 </template>
 
@@ -110,7 +112,6 @@ export default {
                 images.push(value)
               }
             }
-
         }
       }
 
@@ -152,6 +153,35 @@ export default {
     },
     addToCollectionCloseDialog() {
       this.addToCollectionDialog = false
+    },
+    deleteSelectedImages() {
+      let result = confirm('Are you sure to delete all selected images?')
+      if (result) {
+        this.editImages.forEach((editImageId) => {
+          let foundImage = this.images.find((image) => {
+            return image.id == editImageId
+          })
+          if (foundImage) {
+            this.$store.commit('images/deleteFromIndexedDB', foundImage)
+          }
+        })
+
+      }
+    },
+    deleteCurrentCollection() {
+      let collections = this.$store.state.collections.list
+      let foundCollection = collections.find((collection) => {
+        return collection.id == this.id
+      })
+      if (foundCollection) {
+        let result = confirm(`Are you sure to delete "${foundCollection.name}" Collection?`)
+        if (result) {
+          this.$store.commit('collections/deleteFromIndexedDB', foundCollection)
+          this.$router.replace({
+            path: '/collections/1'
+          })
+        }
+      }
     }
   },
 }

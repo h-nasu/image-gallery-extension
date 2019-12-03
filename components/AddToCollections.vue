@@ -47,11 +47,12 @@
 export default {
   props: [
     'dialog',
+    'currentId',
     'imageIds'
   ],
   data() {
     return {
-      selecteds: [1],
+      selecteds: [1, parseInt(this.currentId)],
     }
   },
   watch: {
@@ -92,6 +93,7 @@ export default {
             })
           }
         })
+        this.$store.commit('images/loadAllFromIndexedDB')
       }
       this.$emit('closeDialog')
     },
