@@ -10,6 +10,12 @@ export default {
           options: {
             unique: false
           }
+        },
+        {
+          name: 'url',
+          options: {
+            unique: true
+          }
         }
       ],
       defaultData: [

@@ -188,6 +188,15 @@ export default {
 
     });
     */
+    let self = this
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+      if (request.type == 'savedImageToIndexedDB') {
+        console.log('Image-Gallery Got Images')
+        self.$store.commit('images/loadAllFromIndexedDB')
+        sendResponse({farewell: 'Got Images on Image-Gallery!'})
+      }
+
+    });
     if (window.location.href.search('index.html') > -1) {
       this.$router.replace({
         path: '/'

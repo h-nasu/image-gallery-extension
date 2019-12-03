@@ -33,6 +33,52 @@ const checkDB = () => {
   }
 }
 
+const addImageToIndexedDB = (url) => {
+  let objectStore = getObjectStore('images')
+  let index = objectStore.index("url")
+  let requestCheck = index.get(url)
+  requestCheck.onerror = () => {
+    console.log("No Image found in indexedDB");
+  }
+  requestCheck.onsuccess = (event) => {
+    if (event.target.result) {
+      console.log("Image already in Collection");
+    } else {
+      console.log("No Image found in indexedDB");
+
+      let request = objectStore.add({
+        url: url
+      })
+      request.onerror = () => {
+        console.log('Can not save image')
+      }
+      request.onsuccess = (event) => {
+        console.log('Image saved')
+        console.log(url)
+
+        // Send to Image Gallery
+        chrome.runtime.sendMessage({type: "savedImageToIndexedDB"}, function(response) {
+          //console.log(response.farewell);
+        });
+
+      }
+
+    }
+  }
+}
+
+const checkGalleryOpen = () => {
+  chrome.tabs.getAllInWindow(null, function(checkTabs){
+    for (var i = 0; i < checkTabs.length; i++) {
+      if (checkTabs[i].title == 'image-gallery-extension - image-gallery-extension') {
+        return
+        break
+      }
+    }
+    window.open('image-gallery/index.html')
+  });
+}
+
 chrome.runtime.onInstalled.addListener(function() {
 
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -69,34 +115,20 @@ chrome.runtime.onInstalled.addListener(function() {
   });
 
   chrome.contextMenus.onClicked.addListener((info, tab) => {
-    let objectStore = getObjectStore('images')
-    let request = objectStore.add({
-      url: info.srcUrl
-    })
-    request.onerror = () => {
-      console.log('Can not save image')
+    if (info.menuItemId == 'save_image') {
+      addImageToIndexedDB(info.srcUrl)
+      checkGalleryOpen()
     }
-    request.onsuccess = (event) => {
-      //
-      console.log('Image saved')
-      console.log(info.srcUrl)
-    }
-
   });
 
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type == 'getImages' && request.images) {
       console.log('Background Got Images')
       console.log(request.images)
-      let objectStore = getObjectStore('images')
       request.images.forEach((image) => {
-
-        // TODO: Check URL for same
-
-        objectStore.add({
-          url: image
-        })
+        addImageToIndexedDB(image)
       })
+      checkGalleryOpen()
 
       sendResponse({farewell: 'Got Images on Background!'})
     } else {

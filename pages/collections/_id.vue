@@ -2,7 +2,7 @@
   <div>
     <div class="floatButton">
       <v-btn color="primary" @click="toggleEdit()">
-        {{ editFlag ? 'Finish Edit Image' : 'Edit Image' }}
+        {{ editFlag ? 'Finish Edit Images' : 'Edit Images' }}
       </v-btn>
 
       <span v-if="editFlag">
@@ -11,11 +11,14 @@
             Add to Collections
           </v-btn>
           <v-btn small color="warning" @click="deleteSelectedImages()">
-            Delete Images
+            Delete Selected Images
           </v-btn>
         </span>
-        <v-btn small color="error" @click="deleteCurrentCollection()">
+        <v-btn v-if="parseInt(id) != 0 && parseInt(id) != 1" small color="error" @click="deleteCurrentCollection()">
           Delete this Collection
+        </v-btn>
+        <v-btn small color="error" v-if="parseInt(id) == 0" @click="deleteAllImages()">
+          Delete All Images
         </v-btn>
       </span>
     </div>
@@ -118,6 +121,7 @@ export default {
       list.forEach((value) => {
         checkAdd(value)
       })
+      images.reverse()
       this.loadLightbox()
       return images
     }
@@ -181,6 +185,15 @@ export default {
             path: '/collections/1'
           })
         }
+      }
+    },
+    deleteAllImages() {
+      let result = confirm('Are you sure to delete all images?')
+      if (result) {
+        this.images.forEach((image) => {
+          this.$store.commit('images/deleteFromIndexedDB', image)
+        })
+
       }
     }
   },

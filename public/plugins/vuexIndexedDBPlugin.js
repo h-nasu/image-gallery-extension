@@ -37,16 +37,6 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
 
       for (let keyState in store.state) {
         loadDataFromStore(keyState)
-/*
-        if (db.objectStoreNames.contains(keyState)) {
-          const mutationType = `${keyState}/initFromIndexedDB`
-          if (store._mutations && store._mutations[mutationType]) {
-            getObjectStore(keyState).getAll().onsuccess = function(event) {
-              store.commit(mutationType, event.target.result)
-            }
-          }
-        }
-        */
       }
     }
 
