@@ -48,6 +48,11 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
 
           let state = store.state[keyState]
           if (state.schema) {
+            if (state.schema.indexes) {
+              state.schema.indexes.forEach((index) => {
+                objectStore.createIndex(index.name, index.name, index.options)
+              })
+            }
             if (state.schema.defaultData) {
               let defaultData = state.schema.defaultData
               defaultData.forEach((data) => {
@@ -120,6 +125,9 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
       console.log(mutation)
       console.log(state)
 
+      let objectStore
+      let request
+
       let typeArr = mutation.type.split('/')
       let action = typeArr.pop()
       let storeName = typeArr[0]
@@ -127,8 +135,8 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
 
       switch (action) {
         case 'addToIndexedDB':
-          let objectStore = getObjectStore(storeName)
-          let request = objectStore.add(data)
+          objectStore = getObjectStore(storeName)
+          request = objectStore.add(data)
           request.onerror = () => {
             console.log('Data add error for '+ storeName)
           }
@@ -136,6 +144,25 @@ export default function vuexIndexedDBPlugin(dbname, dbversion) {
             console.log('Data added to '+ storeName)
             data.id = event.target.result
             store.commit(`${storeName}/addedToIndexedDB`, data)
+          }
+          break;
+        case 'editFromIndexedDB':
+          objectStore = getObjectStore(storeName)
+          if (data.object && data.params) {
+            request = objectStore.get(data.object.id);
+            request.onsuccess = (event) => {
+              // Do something with the request.result!
+              console.log("IndexedDB edit " + storeName + ' ' + data.object.id);
+
+              let dbData = event.target.result;
+
+              for (let key in data.params) {
+                dbData[key] = data.params[key]
+              }
+
+              // Put this updated object back into the database.
+              let requestUpdate = objectStore.put(dbData);
+            }
           }
           break;
 

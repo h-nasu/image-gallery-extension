@@ -107,14 +107,16 @@ export default {
       items: [
         {
           icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
+          title: 'New Images',
+          to: '/collections/0'
         },
+        /*
         {
           icon: 'mdi-chart-bubble',
           title: 'Inspire',
           to: '/inspire'
         }
+        */
       ],
       miniVariant: false,
       title: 'Image Gallery Extension',

@@ -4,6 +4,14 @@ export default {
   dbversion: '1',
   schema: {
     images: {
+      indexes: [
+        {
+          name: 'collectionIds',
+          options: {
+            unique: false
+          }
+        }
+      ],
       defaultData: [
         {
           id: 1,

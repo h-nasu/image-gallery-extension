@@ -17,7 +17,9 @@ export const mutations = {
   deleteFromIndexedDB (state, image) {
     state.list.splice(state.list.indexOf(image), 1)
   },
-  editFromIndexedDB (state, image, name) {
-    image.name = name
+  editFromIndexedDB (state, {object, params}) {
+    for (let key in params) {
+      object[key] = params[key]
+    }
   }
 }
